@@ -22,6 +22,7 @@ app.post("/gitlab-webhook", async (req: Request, res: Response) => {
   }
 
   const event = req.body;
+  console.log("Evento recebido:", event);
 
   if (
     event.object_kind === "merge_request" &&
