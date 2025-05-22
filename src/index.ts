@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
 
+import { ILabel } from "./interface";
+
 dotenv.config();
 
 const app = express();
@@ -17,48 +19,33 @@ app.get("/", (req: Request, res: Response) => {
 
 app.post("/gitlab-webhook", async (req: Request, res: Response) => {
   const token = req.headers["x-gitlab-token"];
+
   if (token !== GITLAB_SECRET_TOKEN) {
     return res.status(403).send("Token inválido");
   }
 
   const event = req.body;
-  console.log("Evento recebido:", event);
 
   if (
-    event.object_kind === "merge_request" &&
+    event.object_kind === "issue" &&
     event.object_attributes.action === "update"
   ) {
-    const labels = event.labels?.map((label: any) => label.title) || [];
+    const labels = event.labels?.map((label: ILabel) => label.title) || [];
 
-    if (labels.includes("code-review")) {
-      const mr = event.object_attributes;
+    if (labels.includes("codereview::pending")) {
+      const issue = event.object_attributes;
       const user = event.user;
 
-      const teamsPayload = {
-        "@type": "MessageCard",
-        "@context": "http://schema.org/extensions",
-        summary: "Merge Request atualizada para Code Review",
-        themeColor: "0076D7",
-        title: `🔍 Merge Request em revisão: ${mr.title}`,
-        sections: [
-          {
-            activityTitle: `Por: **${user.name}**`,
-            activitySubtitle: `Projeto: ${event.project.name}`,
-            facts: [
-              {
-                name: "Branch:",
-                value: `${mr.source_branch} → ${mr.target_branch}`,
-              },
-              { name: "Status:", value: mr.state },
-              { name: "Link:", value: `[Abrir MR](${mr.url})` },
-            ],
-            markdown: true,
-          },
-        ],
+      const issuePayload = {
+        text: `Novo pedido de revisão de código!`,
+        project: `*${event.project.name}*`,
+        issue: `*${issue.title}* #${issue.iid}`,
+        url: issue.url,
+        user: `*${user.name}* (${user.username})`,
       };
-
+      console.log("Evento recebido:", issuePayload);
       try {
-        await axios.post(TEAMS_WEBHOOK_URL, teamsPayload);
+        await axios.post(TEAMS_WEBHOOK_URL, issuePayload);
         return res.status(200).send("Mensagem enviada ao Teams");
       } catch (error: any) {
         console.error("Erro ao enviar para o Teams:", error.message);
