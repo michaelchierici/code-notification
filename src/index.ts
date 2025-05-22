@@ -53,18 +53,17 @@ app.post("/gitlab-webhook", async (req: Request, res: Response) => {
                 },
                 {
                   type: "TextBlock",
-                  text: `**Projeto:** ${event.project.name}`,
+                  weight: "bolder",
+                  text: `📝 ${issue.title} (#${issue.iid})`,
                 },
                 {
                   type: "TextBlock",
-                  text: `**Título:** ${issue.title} (#${issue.iid})`,
+                  color: "default",
+                  text: `👤 ${user.name} (${user.username})`,
                 },
                 {
                   type: "TextBlock",
-                  text: `**Solicitado por:** ${user.name} (${user.username})`,
-                },
-                {
-                  type: "TextBlock",
+                  color: "accent",
                   text: `[🔗 Abrir issue](${issue.url})`,
                 },
               ],
@@ -73,9 +72,10 @@ app.post("/gitlab-webhook", async (req: Request, res: Response) => {
           },
         ],
       };
-      console.log("Evento recebido:", issuePayload);
+
       try {
         await axios.post(TEAMS_WEBHOOK_URL, issuePayload);
+        console.log("Evento enviado para o Teams:", issuePayload);
         return res.status(200).send("Mensagem enviada ao Teams");
       } catch (error: any) {
         console.error("Erro ao enviar para o Teams:", error.message);
