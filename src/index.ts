@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
 
-import { ILabel } from "./interface";
+import { ILabel, ITeamsWebhookPayload } from "./interface";
 
 dotenv.config();
 
@@ -36,7 +36,7 @@ app.post("/gitlab-webhook", async (req: Request, res: Response) => {
       const issue = event.object_attributes;
       const user = event.user;
 
-      const issuePayload = {
+      const issuePayload: ITeamsWebhookPayload = {
         type: "message",
         attachments: [
           {
