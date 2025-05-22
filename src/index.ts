@@ -37,11 +37,41 @@ app.post("/gitlab-webhook", async (req: Request, res: Response) => {
       const user = event.user;
 
       const issuePayload = {
-        text: `Novo pedido de revisão de código!`,
-        project: `*${event.project.name}*`,
-        issue: `*${issue.title}* #${issue.iid}`,
-        url: issue.url,
-        user: `*${user.name}* (${user.username})`,
+        type: "message",
+        attachments: [
+          {
+            contentType: "application/vnd.microsoft.card.adaptive",
+            content: {
+              type: "AdaptiveCard",
+              version: "1.4",
+              body: [
+                {
+                  type: "TextBlock",
+                  size: "Large",
+                  weight: "Bolder",
+                  text: "🚀 Novo pedido de *Code Review*",
+                },
+                {
+                  type: "TextBlock",
+                  text: `**Projeto:** ${event.project.name}`,
+                },
+                {
+                  type: "TextBlock",
+                  text: `**Título:** ${issue.title} (#${issue.iid})`,
+                },
+                {
+                  type: "TextBlock",
+                  text: `**Solicitado por:** ${user.name} (${user.username})`,
+                },
+                {
+                  type: "TextBlock",
+                  text: `[🔗 Abrir issue](${issue.url})`,
+                },
+              ],
+              $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+            },
+          },
+        ],
       };
       console.log("Evento recebido:", issuePayload);
       try {
