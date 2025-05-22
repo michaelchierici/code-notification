@@ -1,6 +1,4 @@
-# code-notification
-
-Serviço de notificação que integra webhooks do GitLab com Microsoft Teams.
+# Serviço de notificação que integra webhooks do GitLab com Microsoft Teams.
 
 ## Pré-requisitos
 
