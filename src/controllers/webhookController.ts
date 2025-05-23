@@ -4,7 +4,7 @@ import { sendCodeReviewEvent } from "../events";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
-
+  console.log("Evento recebido:", event);
   if (
     event.object_kind === "issue" &&
     event.object_attributes &&
