@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { hasCodeReviewLabel, createCodeReviewNotification } from "../services/gitlabService";
-import { sendTeamsNotification } from "../services/teamsService";
-import { logger } from "../utils/logger";
+import { hasCodeReviewLabel } from "../services/gitlabService";
+import { sendCodeReviewEvent } from "../events";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
@@ -12,22 +11,21 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
     event.object_attributes.action === "update"
   ) {
     const labels = event.labels || [];
+    const issue = event.object_attributes;
+    const user = event.user;
+    let notificationWasSent = false;
 
     if (hasCodeReviewLabel(labels)) {
-      const issue = event.object_attributes;
-      const user = event.user;
+      notificationWasSent = await sendCodeReviewEvent(issue, user);
+    }
 
-      const notificationPayload = createCodeReviewNotification(issue, user);
-
-      const success = await sendTeamsNotification(notificationPayload);
-
-      if (success) {
-        return res.status(200).send("Mensagem enviada ao Teams");
-      } else {
-        return res.status(500).send("Erro ao enviar para o Teams");
-      }
+    if (notificationWasSent) {
+      res.status(200).send('Evento processado com sucesso');
+    } else {
+      res.status(500).send('Erro ao processar evento');
     }
   }
 
   res.status(200).send("Evento recebido.");
 };
+

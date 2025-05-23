@@ -44,6 +44,7 @@ export const createCodeReviewNotification = (
   };
 };
 
+
 export const hasCodeReviewLabel = (labels: ILabel[]): boolean => {
   return labels.some(label => label.title === "codereview::pending");
 };

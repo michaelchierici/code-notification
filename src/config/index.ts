@@ -6,8 +6,8 @@ dotenv.config();
 
 const envSchema = z.object({
   PORT: z.string().optional().default("3000"),
-  TEAMS_WEBHOOK_URL: z.string().url({
-    message: "TEAMS_WEBHOOK_URL must be a valid URL"
+  CODE_REVIEW_CHAT_WEBHOOK_URL: z.string().url({
+    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
   }),
   GITLAB_SECRET_TOKEN: z.string().min(1, {
     message: "GITLAB_SECRET_TOKEN is required"
@@ -32,7 +32,9 @@ const env = validateEnv();
 
 export const config = {
   port: parseInt(env.PORT, 10) || 3000,
-  teamsWebhookUrl: env.TEAMS_WEBHOOK_URL,
+  codeReviewWebhookUrl: env.CODE_REVIEW_CHAT_WEBHOOK_URL,
+  hotfixWebhookUrl: env.HOTFIX_CHAT_WEBHOOK_URL,
+  deployWebhookUrl: env.DEPLOY_CHAT_WEBHOOK_URL,
   gitlabSecretToken: env.GITLAB_SECRET_TOKEN,
 };
 
