@@ -20,12 +20,12 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
     }
 
     if (notificationWasSent) {
-      res.status(200).send('Evento processado com sucesso');
+      return res.status(200).send('Evento processado com sucesso');
     } else {
-      res.status(500).send('Erro ao processar evento');
+      return res.status(500).send('Erro ao processar evento');
     }
   }
 
-  res.status(200).send("Evento recebido.");
+  return res.status(200).send("Evento recebido.");
 };
 

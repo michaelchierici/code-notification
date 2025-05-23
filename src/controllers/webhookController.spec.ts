@@ -1,15 +1,20 @@
 import { Request, Response } from 'express';
-import { hasCodeReviewLabel, createCodeReviewNotification } from '../services/gitlabService';
-import { sendTeamsNotification } from '../services/teamsService';
+import { createCodeReviewCard } from '../templates/code-review';
+import { hasCodeReviewLabel } from '../services/gitlabService';
 import { handleGitLabWebhook } from './webhookController';
+import { sendCodeReviewEvent } from '../events';
+
+
+jest.mock('../templates/code-review', () => ({
+  createCodeReviewCard: jest.fn(),
+}));
 
 jest.mock('../services/gitlabService', () => ({
   hasCodeReviewLabel: jest.fn(),
-  createCodeReviewNotification: jest.fn()
 }));
 
-jest.mock('../services/teamsService', () => ({
-  sendTeamsNotification: jest.fn()
+jest.mock('../events', () => ({
+  sendCodeReviewEvent: jest.fn()
 }));
 
 describe('WebhookController', () => {
@@ -35,12 +40,12 @@ describe('WebhookController', () => {
       body: {
         object_kind: 'issue',
         object_attributes: {
-          action: 'update',
-          title: 'Test Issue',
-          iid: 123,
-          url: 'https://gitlab.com/test/project/-/issues/123'
+          "action": "update", "iid": 123, "title": "Test Issue", "url": "https://gitlab.com/test/project/-/issues/123"
         },
-        labels: [],
+
+        labels: [{
+          title: 'codereview::pending'
+        }],
         user: {
           name: 'Test User',
           username: 'testuser'
@@ -61,10 +66,10 @@ describe('WebhookController', () => {
       expect(responseObject.status).toHaveBeenCalledWith(200);
       expect(responseObject.send).toHaveBeenCalledWith('Evento recebido.');
       expect(hasCodeReviewLabel).not.toHaveBeenCalled();
-      expect(sendTeamsNotification).not.toHaveBeenCalled();
+      expect(sendCodeReviewEvent).not.toHaveBeenCalled();
     });
 
-    it('should return 200 when event is an issue update but without code review label', async () => {
+    it('should return 500 when event is an issue update but without code review label', async () => {
       // Arrange
       (hasCodeReviewLabel as jest.Mock).mockReturnValue(false);
 
@@ -73,45 +78,47 @@ describe('WebhookController', () => {
 
       // Assert
       expect(hasCodeReviewLabel).toHaveBeenCalledWith(mockRequest.body.labels);
-      expect(sendTeamsNotification).not.toHaveBeenCalled();
-      expect(responseObject.status).toHaveBeenCalledWith(200);
-      expect(responseObject.send).toHaveBeenCalledWith('Evento recebido.');
+      expect(sendCodeReviewEvent).not.toHaveBeenCalled();
+      expect(responseObject.status).toHaveBeenCalledWith(500);
+      expect(responseObject.send).toHaveBeenCalledWith('Erro ao processar evento');
     });
 
     it('should send notification when issue has code review label', async () => {
       // Arrange
       (hasCodeReviewLabel as jest.Mock).mockReturnValue(true);
-      const mockNotification = { type: 'message', content: 'test' };
-      (createCodeReviewNotification as jest.Mock).mockReturnValue(mockNotification);
-      (sendTeamsNotification as jest.Mock).mockResolvedValue(true);
+      const mockNotification = {
+        type: 'message',
+        content: 'test',
+        name: "Test User",
+        username: "testuser",
+      };
+      (createCodeReviewCard as jest.Mock).mockReturnValue(mockNotification);
+      (sendCodeReviewEvent as jest.Mock).mockResolvedValue(true);
 
       // Act
       await handleGitLabWebhook(mockRequest as Request, mockResponse as Response);
 
       // Assert
       expect(hasCodeReviewLabel).toHaveBeenCalledWith(mockRequest.body.labels);
-      expect(createCodeReviewNotification).toHaveBeenCalledWith(
-        mockRequest.body.object_attributes,
-        mockRequest.body.user
-      );
-      expect(sendTeamsNotification).toHaveBeenCalledWith(mockNotification);
+
+      expect(sendCodeReviewEvent).toHaveBeenCalledWith(mockRequest.body.object_attributes, mockRequest.body.user);
       expect(responseObject.status).toHaveBeenCalledWith(200);
-      expect(responseObject.send).toHaveBeenCalledWith('Mensagem enviada ao Teams');
+      expect(responseObject.send).toHaveBeenCalledWith('Evento processado com sucesso');
     });
 
     it('should return 500 when Teams notification fails', async () => {
       // Arrange
       (hasCodeReviewLabel as jest.Mock).mockReturnValue(true);
-      (createCodeReviewNotification as jest.Mock).mockReturnValue({});
-      (sendTeamsNotification as jest.Mock).mockResolvedValue(false);
+      (createCodeReviewCard as jest.Mock).mockReturnValue({});
+      (sendCodeReviewEvent as jest.Mock).mockResolvedValue(false);
 
       // Act
       await handleGitLabWebhook(mockRequest as Request, mockResponse as Response);
 
       // Assert
-      expect(sendTeamsNotification).toHaveBeenCalled();
+      expect(sendCodeReviewEvent).toHaveBeenCalled();
       expect(responseObject.status).toHaveBeenCalledWith(500);
-      expect(responseObject.send).toHaveBeenCalledWith('Erro ao enviar para o Teams');
+      expect(responseObject.send).toHaveBeenCalledWith('Erro ao processar evento');
     });
 
     it('should handle missing properties in the webhook payload', async () => {

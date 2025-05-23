@@ -9,6 +9,12 @@ const envSchema = z.object({
   CODE_REVIEW_CHAT_WEBHOOK_URL: z.string().url({
     message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
   }),
+  HOTFIX_CHAT_WEBHOOK_URL: z.string().url({
+    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
+  }),
+  DEPLOY_CHAT_WEBHOOK_URL: z.string().url({
+    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
+  }),
   GITLAB_SECRET_TOKEN: z.string().min(1, {
     message: "GITLAB_SECRET_TOKEN is required"
   })
