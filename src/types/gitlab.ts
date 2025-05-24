@@ -30,3 +30,8 @@ export interface IGitlabUser {
   avatar_url: string;
   email: string;
 }
+
+export type LabelHandler = {
+  check: (labels: any[]) => boolean;
+  handle: (issue: any, user: IGitlabUser) => Promise<boolean>;
+};

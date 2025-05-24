@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { handleGitLabWebhook } from "./webhookController";
-import { hasCodeReviewPendingLabel } from "../services/gitlabService";
+import { hasCodeReviewPendingLabel } from "../validators/labels"
 import { sendCodeReviewPendingEvent } from "../events";
 import { createCodeReviewPendingTemplate } from "../templates";
 
@@ -8,7 +8,7 @@ jest.mock("../templates", () => ({
   createCodeReviewPendingTemplate: jest.fn(),
 }));
 
-jest.mock("../services/gitlabService", () => ({
+jest.mock("../validators/labels", () => ({
   hasCodeReviewPendingLabel: jest.fn(),
 }));
 

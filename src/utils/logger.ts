@@ -7,5 +7,5 @@ export const logger = {
   },
   warn: (message: string, data?: any) => {
     console.warn(`[WARN] ${message}`, data ? data : "");
-  }
+  },
 };

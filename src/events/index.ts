@@ -10,6 +10,7 @@ import {
   createMergeRequestFixedTemplate,
 } from "../templates";
 import { IGitlabUser } from "../types/gitlab";
+import { logger } from "../utils/logger";
 
 export async function sendCodeReviewPendingEvent(
   issue: any,
@@ -20,7 +21,7 @@ export async function sendCodeReviewPendingEvent(
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de code review:", error);
+    logger.error("Erro ao enviar notificação de code review:", error);
     return false;
   }
 }
@@ -34,7 +35,7 @@ export async function sendCodeReviewValidatedEvent(
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de merge request:", error);
+    logger.error("Erro ao enviar notificação de merge request:", error);
     return false;
   }
 }
@@ -48,7 +49,7 @@ export async function sendCodeReviewFailEvent(
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de merge request:", error);
+    logger.error("Erro ao enviar notificação de merge request:", error);
     return false;
   }
 }
@@ -62,7 +63,7 @@ export async function sendCodeReviewFixedEvent(
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de merge request:", error);
+    logger.error("Erro ao enviar notificação de merge request:", error);
     return false;
   }
 }
@@ -76,7 +77,7 @@ export async function sendCodeReviewHotfixEvent(
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de code review:", error);
+    logger.error("Erro ao enviar notificação de code review:", error);
     return false;
   }
 }
@@ -87,7 +88,7 @@ export async function sendHoftixEvent(issue: any): Promise<boolean> {
     await sendTeamsNotification(config.hotfixWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de hotfix:", error);
+    logger.error("Erro ao enviar notificação de hotfix:", error);
     return false;
   }
 }
@@ -101,7 +102,7 @@ export async function sendDeployEvent(
     await sendTeamsNotification(config.deployWebhookUrl, template);
     return true;
   } catch (error) {
-    console.error("Erro ao enviar notificação de deploy:", error);
+    logger.error("Erro ao enviar notificação de deploy:", error);
     return false;
   }
 }
