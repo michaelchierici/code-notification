@@ -161,7 +161,7 @@ export const createMergeRequestFailTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Author*:: ${user.name} (${user.username})`,
+      text: `*Author*: ${user.name} (${user.username})`,
     },
     {
       type: "TextBlock",

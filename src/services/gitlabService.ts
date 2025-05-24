@@ -16,7 +16,7 @@ export const hasCodeReviewFixedLabel = (labels: ILabel[]): boolean => {
   return labels.some((label) => label.title === "codereview::fixed");
 };
 
-export const hasCodeReviewPendingHotfixLabel = (labels: ILabel[]): boolean => {
+export const hasCodeReviewPendingHotfixLabels = (labels: ILabel[]): boolean => {
   const hasPending = labels.some(
     (label) => label.title === "codereview::pending"
   );
@@ -24,7 +24,7 @@ export const hasCodeReviewPendingHotfixLabel = (labels: ILabel[]): boolean => {
   return hasPending && hasHotfix;
 };
 
-export const hasCodeReviewValidatedAndDoneLabel = (
+export const hasCodeReviewValidatedAndDoneLabels = (
   labels: ILabel[]
 ): boolean => {
   const hasPending = labels.some(
@@ -34,7 +34,7 @@ export const hasCodeReviewValidatedAndDoneLabel = (
   return hasPending && hasHotfix;
 };
 
-export const hasHotfixLabel = (labels: ILabel[]): boolean => {
+export const hasToDoAndHotfixLabels = (labels: ILabel[]): boolean => {
   const hasPending = labels.some((label) => label.title === "To do");
   const hasHotfix = labels.some((label) => label.title === "Hotfix");
   return hasPending && hasHotfix;

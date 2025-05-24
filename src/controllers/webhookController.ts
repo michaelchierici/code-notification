@@ -13,14 +13,15 @@ import {
   hasCodeReviewValidatedLabel,
   hasCodeReviewFailLabel,
   hasCodeReviewFixedLabel,
-  hasCodeReviewPendingHotfixLabel,
-  hasCodeReviewValidatedAndDoneLabel,
-  hasHotfixLabel,
+  hasCodeReviewPendingHotfixLabels,
+  hasCodeReviewValidatedAndDoneLabels,
+  hasToDoAndHotfixLabels,
 } from "../services/gitlabService";
+import { logger } from "../utils/logger";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
-  console.log("Evento recebido:", event);
+  logger.info("Evento recebido:", event);
   if (
     event.object_kind === "issue" &&
     event.object_attributes &&
@@ -47,15 +48,15 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
       notificationWasSent = await sendCodeReviewFixedEvent(issue, user);
     }
 
-    if (hasCodeReviewPendingHotfixLabel(labels)) {
+    if (hasCodeReviewPendingHotfixLabels(labels)) {
       notificationWasSent = await sendCodeReviewHotfixEvent(issue, user);
     }
 
-    if (hasCodeReviewValidatedAndDoneLabel(labels)) {
+    if (hasCodeReviewValidatedAndDoneLabels(labels)) {
       notificationWasSent = await sendDeployEvent(issue, user);
     }
 
-    if (hasHotfixLabel(labels)) {
+    if (hasToDoAndHotfixLabels(labels)) {
       notificationWasSent = await sendHoftixEvent(issue);
     }
 
