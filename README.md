@@ -46,7 +46,9 @@ npm install
 3. Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-TEAMS_WEBHOOK_URL=https://outlook.office.com/webhook/seu-webhook-do-teams
+CODE_REVIEW_CHAT_WEBHOOK_URL=https://outlook.office.com/webhook/seu-webhook-do-teams
+HOTFIX_CHAT_WEBHOOK_URL=https://outlook.office.com/webhook/seu-webhook-hotfix
+DEPLOY_CHAT_WEBHOOK_URL=https://outlook.office.com/webhook/seu-webhook-deploy
 GITLAB_SECRET_TOKEN=seu-token-secreto-gitlab
 ```
 
@@ -71,7 +73,9 @@ Para testar o endpoint do webhook:
 
 ## Variáveis de Ambiente
 
-- `TEAMS_WEBHOOK_URL`: URL do webhook do Microsoft Teams
+- `CODE_REVIEW_CHAT_WEBHOOK_URL`: URL do webhook do Microsoft Teams
+- `HOTFIX_CHAT_WEBHOOK_URL`: URL do webhook do Microsoft Teams para notificações de hotfixes
+- `DEPLOY_CHAT_WEBHOOK_URL`: URL do webhook do Microsoft Teams para notificações de deploys
 - `GITLAB_SECRET_TOKEN`: Token secreto configurado no webhook do GitLab
 
 ## Formato do Payload do Teams

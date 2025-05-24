@@ -1,11 +1,10 @@
 import axios from "axios";
-import { config } from "../config";
 import { logger } from "../utils/logger";
 import { ITeamsWebhookPayload } from "../types/teams";
 
-export const sendTeamsNotification = async (payload: ITeamsWebhookPayload): Promise<boolean> => {
+export const sendTeamsNotification = async (webhookUrl: string, payload: ITeamsWebhookPayload): Promise<boolean> => {
   try {
-    await axios.post(config.teamsWebhookUrl, payload);
+    await axios.post(webhookUrl, payload);
     logger.info("Evento enviado para o Teams");
     return true;
   } catch (error: any) {

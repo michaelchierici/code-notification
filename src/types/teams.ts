@@ -1,9 +1,18 @@
-interface ITextBlock {
+export interface ITextBlock {
   type: "TextBlock";
   size?: "Large" | "Medium" | "Small";
   weight?: "Bolder" | "bolder" | "normal";
+  horizontalAlignment?: "Center" | "Left" | "Right";
+  color?:
+    | "Default"
+    | "Accent"
+    | "Dark"
+    | "Light"
+    | "Warning"
+    | "Attention"
+    | "Good";
   text: string;
-  color?: "default" | "accent";
+  wrap?: boolean;
 }
 
 interface IAdaptiveCard {

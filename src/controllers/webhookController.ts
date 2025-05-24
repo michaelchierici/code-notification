@@ -1,33 +1,71 @@
 import { Request, Response } from "express";
-import { hasCodeReviewLabel, createCodeReviewNotification } from "../services/gitlabService";
-import { sendTeamsNotification } from "../services/teamsService";
+import {
+  sendCodeReviewPendingEvent,
+  sendCodeReviewValidatedEvent,
+  sendCodeReviewFailEvent,
+  sendCodeReviewFixedEvent,
+  sendCodeReviewHotfixEvent,
+  sendDeployEvent,
+  sendHoftixEvent,
+} from "../events";
+import {
+  hasCodeReviewPendingLabel,
+  hasCodeReviewValidatedLabel,
+  hasCodeReviewFailLabel,
+  hasCodeReviewFixedLabel,
+  hasCodeReviewPendingHotfixLabels,
+  hasCodeReviewValidatedAndDoneLabels,
+  hasToDoAndHotfixLabels,
+} from "../services/gitlabService";
 import { logger } from "../utils/logger";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
-
+  logger.info("Evento recebido:", event);
   if (
     event.object_kind === "issue" &&
     event.object_attributes &&
     event.object_attributes.action === "update"
   ) {
     const labels = event.labels || [];
+    const issue = event.object_attributes;
+    const user = event.user;
+    let notificationWasSent = false;
 
-    if (hasCodeReviewLabel(labels)) {
-      const issue = event.object_attributes;
-      const user = event.user;
+    if (hasCodeReviewPendingLabel(labels)) {
+      notificationWasSent = await sendCodeReviewPendingEvent(issue, user);
+    }
 
-      const notificationPayload = createCodeReviewNotification(issue, user);
+    if (hasCodeReviewValidatedLabel(labels)) {
+      notificationWasSent = await sendCodeReviewValidatedEvent(issue, user);
+    }
 
-      const success = await sendTeamsNotification(notificationPayload);
+    if (hasCodeReviewFailLabel(labels)) {
+      notificationWasSent = await sendCodeReviewFailEvent(issue, user);
+    }
 
-      if (success) {
-        return res.status(200).send("Mensagem enviada ao Teams");
-      } else {
-        return res.status(500).send("Erro ao enviar para o Teams");
-      }
+    if (hasCodeReviewFixedLabel(labels)) {
+      notificationWasSent = await sendCodeReviewFixedEvent(issue, user);
+    }
+
+    if (hasCodeReviewPendingHotfixLabels(labels)) {
+      notificationWasSent = await sendCodeReviewHotfixEvent(issue, user);
+    }
+
+    if (hasCodeReviewValidatedAndDoneLabels(labels)) {
+      notificationWasSent = await sendDeployEvent(issue, user);
+    }
+
+    if (hasToDoAndHotfixLabels(labels)) {
+      notificationWasSent = await sendHoftixEvent(issue);
+    }
+
+    if (notificationWasSent) {
+      return res.status(200).send("Evento processado com sucesso");
+    } else {
+      return res.status(500).send("Erro ao processar evento");
     }
   }
 
-  res.status(200).send("Evento recebido.");
+  return res.status(200).send("Evento recebido.");
 };

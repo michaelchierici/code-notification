@@ -1,49 +1,41 @@
 import { ILabel } from "../types/gitlab";
-import { ITeamsWebhookPayload } from "../types/teams";
 
-
-export const createCodeReviewNotification = (
-  issue: any,
-  user: any
-): ITeamsWebhookPayload => {
-  return {
-    type: "message",
-    attachments: [
-      {
-        contentType: "application/vnd.microsoft.card.adaptive",
-        content: {
-          type: "AdaptiveCard",
-          version: "1.4",
-          body: [
-            {
-              type: "TextBlock",
-              size: "Large",
-              weight: "Bolder",
-              text: "🚀 Novo pedido de *Code Review*",
-            },
-            {
-              type: "TextBlock",
-              weight: "bolder",
-              text: `📝 ${issue.title} (#${issue.iid})`,
-            },
-            {
-              type: "TextBlock",
-              color: "default",
-              text: `👤 ${user.name} (${user.username})`,
-            },
-            {
-              type: "TextBlock",
-              color: "accent",
-              text: `[🔗 Abrir issue](${issue.url})`,
-            },
-          ],
-          $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
-        },
-      },
-    ],
-  };
+export const hasCodeReviewPendingLabel = (labels: ILabel[]): boolean => {
+  return labels.some((label) => label.title === "codereview::pending");
 };
 
-export const hasCodeReviewLabel = (labels: ILabel[]): boolean => {
-  return labels.some(label => label.title === "codereview::pending");
+export const hasCodeReviewValidatedLabel = (labels: ILabel[]): boolean => {
+  return labels.some((label) => label.title === "codereview::validated");
+};
+
+export const hasCodeReviewFailLabel = (labels: ILabel[]): boolean => {
+  return labels.some((label) => label.title === "codereview::fail");
+};
+
+export const hasCodeReviewFixedLabel = (labels: ILabel[]): boolean => {
+  return labels.some((label) => label.title === "codereview::fixed");
+};
+
+export const hasCodeReviewPendingHotfixLabels = (labels: ILabel[]): boolean => {
+  const hasPending = labels.some(
+    (label) => label.title === "codereview::pending"
+  );
+  const hasHotfix = labels.some((label) => label.title === "Hotfix");
+  return hasPending && hasHotfix;
+};
+
+export const hasCodeReviewValidatedAndDoneLabels = (
+  labels: ILabel[]
+): boolean => {
+  const hasPending = labels.some(
+    (label) => label.title === "codereview::validated"
+  );
+  const hasHotfix = labels.some((label) => label.title === "Done");
+  return hasPending && hasHotfix;
+};
+
+export const hasToDoAndHotfixLabels = (labels: ILabel[]): boolean => {
+  const hasPending = labels.some((label) => label.title === "To do");
+  const hasHotfix = labels.some((label) => label.title === "Hotfix");
+  return hasPending && hasHotfix;
 };
