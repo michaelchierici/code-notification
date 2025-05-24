@@ -1,9 +1,18 @@
-interface ITextBlock {
+export interface ITextBlock {
   type: "TextBlock";
   size?: "Large" | "Medium" | "Small";
   weight?: "Bolder" | "bolder" | "normal";
+  horizontalAlignment?: "Center" | "Left" | "Right";
+  color?:
+    | "Default"
+    | "Accent"
+    | "Dark"
+    | "Light"
+    | "Warning"
+    | "Attention"
+    | "Good";
   text: string;
-  color?: "default" | "accent";
+  wrap?: boolean;
 }
 
 interface IAdaptiveCard {
@@ -21,17 +30,4 @@ interface IAttachment {
 export interface ITeamsWebhookPayload {
   type: "message";
   attachments: IAttachment[];
-}
-
-export interface ILabel {
-  id: number;
-  title: string;
-  color: string;
-  project_id: number | null;
-  created_at: string;
-  updated_at: string;
-  template: boolean;
-  description: string | null;
-  type: string;
-  group_id: number;
 }
