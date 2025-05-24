@@ -1,23 +1,23 @@
 import * as dotenv from "dotenv";
 import { z } from "zod";
-import { logger } from "../utils/logger"
+import { logger } from "../utils/logger";
 
 dotenv.config();
 
 const envSchema = z.object({
   PORT: z.string().optional().default("3000"),
   CODE_REVIEW_CHAT_WEBHOOK_URL: z.string().url({
-    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
+    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL",
   }),
   HOTFIX_CHAT_WEBHOOK_URL: z.string().url({
-    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
+    message: "HOTFIX_CHAT_WEBHOOK_URL must be a valid URL",
   }),
   DEPLOY_CHAT_WEBHOOK_URL: z.string().url({
-    message: "CODE_REVIEW_CHAT_WEBHOOK_URL must be a valid URL"
+    message: "DEPLOY_CHAT_WEBHOOK_URL must be a valid URL",
   }),
   GITLAB_SECRET_TOKEN: z.string().min(1, {
-    message: "GITLAB_SECRET_TOKEN is required"
-  })
+    message: "GITLAB_SECRET_TOKEN is required",
+  }),
 });
 
 function validateEnv() {
@@ -25,7 +25,7 @@ function validateEnv() {
 
   if (!result.success) {
     logger.error("❌ Invalid environment variables:");
-    result.error.errors.forEach(error => {
+    result.error.errors.forEach((error) => {
       logger.error(`  - ${error.path}: ${error.message}`);
     });
     process.exit(1);
