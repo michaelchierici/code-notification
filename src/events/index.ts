@@ -17,6 +17,7 @@ export async function sendCodeReviewPendingEvent(
   assignees: IGitlabAssignee[]
 ): Promise<boolean> {
   try {
+    logger.info("Esse é o valor de assignees: ", assignees)
     const template = createCodeReviewPendingTemplate(issue, assignees);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
