@@ -36,3 +36,21 @@ export type LabelHandler = {
   check: (labels: any[]) => boolean;
   handle: (issue: any, assignees: IGitlabAssignee[], user?: IGitlabAssignee) => Promise<boolean>;
 };
+
+export enum EventTypes {
+  ISSUE = 'issue',
+  UPDATE = 'update',
+  TEST_ENVIRONMENT_PREFIX = 'Ambiente de testes::',
+  READY_TO_TEST = 'Ready to test',
+  QA_USER = 'qa.interno'
+}
+
+export enum LabelTypes {
+  CODE_REVIEW_PENDING = "codereview::pending",
+  CODE_REVIEW_VALIDATED = "codereview::validated",
+  CODE_REVIEW_FAIL = "codereview::fail",
+  CODE_REVIEW_FIXED = "codereview::fixed",
+  DONE = "Done",
+  HOTFIX = "Hotfix",
+  TO_DO = "To do"
+}
