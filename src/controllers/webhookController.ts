@@ -12,7 +12,6 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
     const issue = event.object_attributes;
     const user = event.user
     const assignees = event.assignees ?? []
-    logger.info("Aqui está o evento recebido com assignee:", event?.assignees);
     const matchedHandler = labelHandlers?.find((h) => h.check(labels));
 
     if (!matchedHandler) {
