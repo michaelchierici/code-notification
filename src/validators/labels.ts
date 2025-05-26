@@ -29,8 +29,9 @@ export const hasCodeReviewValidatedAndDoneLabels = (
   return hasValidated && hasDone;
 };
 
+
 export const hasCodeReviewFailLabel = (labels: ILabel[]): boolean => {
-  return labels.some((label) => label.title === LabelTypes.CODE_REVIEW_FAIL);
+  return labels.some((label) => label.title === LabelTypes.CODE_REVIEW_FAILED);
 };
 
 export const hasCodeReviewFixedLabel = (labels: ILabel[]): boolean => {

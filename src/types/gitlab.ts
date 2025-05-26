@@ -8,7 +8,7 @@ export interface ILabel {
   | "Done"
   | "codereview::pending"
   | "codereview::validated"
-  | "codereview::fail"
+  | "codereview::failed"
   | "codereview::fixed"
   | "Ready to test"
   | "Test ok"
@@ -48,7 +48,7 @@ export enum EventTypes {
 export enum LabelTypes {
   CODE_REVIEW_PENDING = "codereview::pending",
   CODE_REVIEW_VALIDATED = "codereview::validated",
-  CODE_REVIEW_FAIL = "codereview::fail",
+  CODE_REVIEW_FAILED = "codereview::failed",
   CODE_REVIEW_FIXED = "codereview::fixed",
   DONE = "Done",
   HOTFIX = "Hotfix",
