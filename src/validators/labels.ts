@@ -52,7 +52,7 @@ export const hasToDoAndHotfixLabels = (labels: ILabel[]): boolean => {
   return hasPending && hasHotfix;
 };
 
-export const labelHandlers: LabelHandler[] = [
+export const labelReviewEventsHandlers: LabelHandler[] = [
   {
     check: hasCodeReviewPendingHotfixLabels,
     handle: (issue, assignees) => sendCodeReviewHotfixEvent(issue, assignees),

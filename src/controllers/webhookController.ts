@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../utils/logger";
-import { labelHandlers } from "../validators/labels";
-import { EventTypes, IGitlabAssignee, ILabel } from "../types/gitlab";
+import { labelReviewEventsHandlers } from "../validators/labels";
+import { EventTypes, ILabel } from "../types/gitlab";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
@@ -12,7 +12,7 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
     const issue = event.object_attributes;
     const user = event.user
     const assignees = event.assignees ?? []
-    const matchedHandler = labelHandlers?.find((h) => h.check(labels));
+    const matchedHandler = labelReviewEventsHandlers?.find((h) => h.check(labels));
 
     if (!matchedHandler) {
       logger.info("Nenhum handler encontrado para as labels:", labels);
