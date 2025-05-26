@@ -9,15 +9,15 @@ import {
   createMergeRequestFailTemplate,
   createMergeRequestFixedTemplate,
 } from "../templates";
-import { IGitlabUser } from "../types/gitlab";
+import { IGitlabAssignee } from "../types/gitlab";
 import { logger } from "../utils/logger";
 
 export async function sendCodeReviewPendingEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): Promise<boolean> {
   try {
-    const template = createCodeReviewPendingTemplate(issue, user);
+    const template = createCodeReviewPendingTemplate(issue, assignees);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
@@ -28,10 +28,11 @@ export async function sendCodeReviewPendingEvent(
 
 export async function sendCodeReviewValidatedEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[],
+  revisor: IGitlabAssignee,
 ): Promise<boolean> {
   try {
-    const template = createMergeRequestValidatedTemplate(issue, user);
+    const template = createMergeRequestValidatedTemplate(issue, assignees, revisor);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
@@ -42,10 +43,11 @@ export async function sendCodeReviewValidatedEvent(
 
 export async function sendCodeReviewFailEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[],
+  revisor: IGitlabAssignee,
 ): Promise<boolean> {
   try {
-    const template = createMergeRequestFailTemplate(issue, user);
+    const template = createMergeRequestFailTemplate(issue, assignees, revisor);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
@@ -56,10 +58,10 @@ export async function sendCodeReviewFailEvent(
 
 export async function sendCodeReviewFixedEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): Promise<boolean> {
   try {
-    const template = createMergeRequestFixedTemplate(issue, user);
+    const template = createMergeRequestFixedTemplate(issue, assignees);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
@@ -70,10 +72,10 @@ export async function sendCodeReviewFixedEvent(
 
 export async function sendCodeReviewHotfixEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): Promise<boolean> {
   try {
-    const template = createCodeReviewHotfixTemplate(issue, user);
+    const template = createCodeReviewHotfixTemplate(issue, assignees);
     await sendTeamsNotification(config.codeReviewWebhookUrl, template);
     return true;
   } catch (error) {
@@ -95,10 +97,10 @@ export async function sendHoftixEvent(issue: any): Promise<boolean> {
 
 export async function sendDeployEvent(
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): Promise<boolean> {
   try {
-    const template = createDeployIssueTemplate(issue, user);
+    const template = createDeployIssueTemplate(issue, assignees);
     await sendTeamsNotification(config.deployWebhookUrl, template);
     return true;
   } catch (error) {

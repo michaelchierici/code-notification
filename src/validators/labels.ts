@@ -9,12 +9,30 @@ import {
 } from "../events";
 import { ILabel, LabelHandler } from "../types/gitlab";
 
-export const hasCodeReviewPendingLabel = (labels: ILabel[]): boolean => {
-  return labels.some((label) => label.title === "codereview::pending");
+export const hasCodeReviewPendingAndDoneLabels = (
+  labels: ILabel[]
+): boolean => {
+  const hasPending = labels.some(
+    (label) => label.title === "codereview::pending"
+  );
+  const hasDone = labels.some((label) => label.title === "Done");
+  return hasPending && hasDone;
 };
 
-export const hasCodeReviewValidatedLabel = (labels: ILabel[]): boolean => {
-  return labels.some((label) => label.title === "codereview::validated");
+export const hasCodeReviewValidatedAndDoneLabels = (
+  labels: ILabel[]
+): boolean => {
+  const hasValidated = labels.some(
+    (label) => label.title === "codereview::validated"
+  );
+  const hasDone = labels.some((label) => label.title === "Done");
+  const hasTestLabels = labels.some(
+    (label) =>
+      label.title === "Test fail" ||
+      label.title === "Test ok" ||
+      label.title === "Test revised"
+  );
+  return hasValidated && hasDone && !hasTestLabels;
 };
 
 export const hasCodeReviewFailLabel = (labels: ILabel[]): boolean => {
@@ -33,15 +51,6 @@ export const hasCodeReviewPendingHotfixLabels = (labels: ILabel[]): boolean => {
   return hasPending && hasHotfix;
 };
 
-export const hasCodeReviewValidatedAndDoneLabels = (
-  labels: ILabel[]
-): boolean => {
-  const hasPending = labels.some(
-    (label) => label.title === "codereview::validated"
-  );
-  const hasHotfix = labels.some((label) => label.title === "Done");
-  return hasPending && hasHotfix;
-};
 
 export const hasToDoAndHotfixLabels = (labels: ILabel[]): boolean => {
   const hasPending = labels.some((label) => label.title === "To do");
@@ -52,27 +61,23 @@ export const hasToDoAndHotfixLabels = (labels: ILabel[]): boolean => {
 export const labelHandlers: LabelHandler[] = [
   {
     check: hasCodeReviewPendingHotfixLabels,
-    handle: (issue, user) => sendCodeReviewHotfixEvent(issue, user),
+    handle: (issue, assignees) => sendCodeReviewHotfixEvent(issue, assignees),
   },
   {
-    check: hasCodeReviewPendingLabel,
-    handle: (issue, user) => sendCodeReviewPendingEvent(issue, user),
-  },
-  {
-    check: hasCodeReviewValidatedLabel,
-    handle: (issue, user) => sendCodeReviewValidatedEvent(issue, user),
-  },
-  {
-    check: hasCodeReviewFailLabel,
-    handle: (issue, user) => sendCodeReviewFailEvent(issue, user),
-  },
-  {
-    check: hasCodeReviewFixedLabel,
-    handle: (issue, user) => sendCodeReviewFixedEvent(issue, user),
+    check: hasCodeReviewPendingAndDoneLabels,
+    handle: (issue, assignees) => sendCodeReviewPendingEvent(issue, assignees),
   },
   {
     check: hasCodeReviewValidatedAndDoneLabels,
-    handle: (issue, user) => sendDeployEvent(issue, user),
+    handle: (issue, assignees, revisor) => sendCodeReviewValidatedEvent(issue, assignees, revisor!),
+  },
+  {
+    check: hasCodeReviewFailLabel,
+    handle: (issue, assignees, revisor) => sendCodeReviewFailEvent(issue, assignees, revisor!),
+  },
+  {
+    check: hasCodeReviewFixedLabel,
+    handle: (issue, assignees) => sendCodeReviewFixedEvent(issue, assignees),
   },
   {
     check: hasToDoAndHotfixLabels,

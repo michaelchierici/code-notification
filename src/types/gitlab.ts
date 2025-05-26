@@ -1,18 +1,19 @@
 export interface ILabel {
   id: number;
   title:
-    | "To do"
-    | "Bugfix"
-    | "Critical"
-    | "Hotfix"
-    | "Done"
-    | "codereview::pending"
-    | "codereview::validated"
-    | "codereview::fail"
-    | "codereview::fixed"
-    | "Ready to test"
-    | "Test ok"
-    | "Test fail";
+  | "To do"
+  | "Bugfix"
+  | "Critical"
+  | "Hotfix"
+  | "Done"
+  | "codereview::pending"
+  | "codereview::validated"
+  | "codereview::fail"
+  | "codereview::fixed"
+  | "Ready to test"
+  | "Test ok"
+  | "Test fail"
+  | "Test revised";
   color: string;
   project_id: number | null;
   created_at: string;
@@ -23,7 +24,7 @@ export interface ILabel {
   group_id: number;
 }
 
-export interface IGitlabUser {
+export interface IGitlabAssignee {
   id: number;
   name: string;
   username: string;
@@ -33,5 +34,5 @@ export interface IGitlabUser {
 
 export type LabelHandler = {
   check: (labels: any[]) => boolean;
-  handle: (issue: any, user: IGitlabUser) => Promise<boolean>;
+  handle: (issue: any, assignees: IGitlabAssignee[], user?: IGitlabAssignee) => Promise<boolean>;
 };

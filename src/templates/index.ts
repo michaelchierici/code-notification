@@ -1,4 +1,4 @@
-import { IGitlabUser } from "../types/gitlab";
+import { IGitlabAssignee } from "../types/gitlab";
 import { ITeamsWebhookPayload, ITextBlock } from "../types/teams";
 
 const baseTemplate = {
@@ -33,7 +33,7 @@ const generateTemplate = (body: ITextBlock[]): ITeamsWebhookPayload => {
 
 export const createCodeReviewPendingTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -52,7 +52,7 @@ export const createCodeReviewPendingTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `👤 ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",
@@ -66,7 +66,7 @@ export const createCodeReviewPendingTemplate = (
 
 export const createCodeReviewHotfixTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -90,7 +90,7 @@ export const createCodeReviewHotfixTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `👤 ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",
@@ -104,7 +104,8 @@ export const createCodeReviewHotfixTemplate = (
 
 export const createMergeRequestValidatedTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[],
+  revisor: IGitlabAssignee,
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -123,12 +124,12 @@ export const createMergeRequestValidatedTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Author*: ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Revisor*: ${user.name} (${user.username})`,
+      text: `*Revisor*: ${revisor.name} (${revisor.username})`,
     },
     {
       type: "TextBlock",
@@ -142,7 +143,8 @@ export const createMergeRequestValidatedTemplate = (
 
 export const createMergeRequestFailTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[],
+  revisor: IGitlabAssignee,
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -161,12 +163,12 @@ export const createMergeRequestFailTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Author*: ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Revisor*: ${user.name} (${user.username})`,
+      text: `*Revisor*: ${revisor?.name} (${revisor?.username})`,
     },
     {
       type: "TextBlock",
@@ -180,7 +182,7 @@ export const createMergeRequestFailTemplate = (
 
 export const createMergeRequestFixedTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -199,12 +201,7 @@ export const createMergeRequestFixedTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `*Author*: ${user.name} (${user.username})`,
-    },
-    {
-      type: "TextBlock",
-      color: "Default",
-      text: `*Revisor*: ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",
@@ -247,7 +244,7 @@ export const createHotfixTemplate = (issue: any): ITeamsWebhookPayload => {
 
 export const createDeployIssueTemplate = (
   issue: any,
-  user: IGitlabUser
+  assignees: IGitlabAssignee[]
 ): ITeamsWebhookPayload => {
   const template: ITextBlock[] = [
     {
@@ -265,7 +262,7 @@ export const createDeployIssueTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: `👤 ${user.name} (${user.username})`,
+      text: `👤 ${assignees.map(assignee => `${assignee?.name} (${assignee?.username})`).join(', ')}`,
     },
     {
       type: "TextBlock",

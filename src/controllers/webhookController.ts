@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { labelHandlers } from "../validators/labels";
+import { IGitlabAssignee } from "../types/gitlab";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
@@ -9,11 +10,11 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
   if (
     event.object_kind === "issue" &&
     event.object_attributes &&
-    event.object_attributes.action === "update"
-  ) {
+    event.object_attributes?.action === "update") {
     const labels = event.labels || [];
     const issue = event.object_attributes;
-    const user = event.user;
+    const user = event.user
+    const assignees = event.assignees?.map((assignee: IGitlabAssignee) => assignee.name) ?? []
 
     const matchedHandler = labelHandlers?.find((h) => h.check(labels));
 
@@ -24,7 +25,7 @@ export const handleGitLabWebhook = async (req: Request, res: Response) => {
         .send("Evento recebido sem labels correspondentes.");
     }
 
-    const success = await matchedHandler.handle(issue, user);
+    const success = await matchedHandler.handle(issue, assignees, user);
 
     if (success) {
       return res.status(200).send("Evento processado com sucesso");

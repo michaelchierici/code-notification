@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { handleGitLabWebhook } from "./webhookController";
-import { hasCodeReviewPendingLabel } from "../validators/labels"
+import { hasCodeReviewPendingAndDoneLabels } from "../validators/labels"
 import { sendCodeReviewPendingEvent } from "../events";
 import { createCodeReviewPendingTemplate } from "../templates";
 
@@ -9,7 +9,7 @@ jest.mock("../templates", () => ({
 }));
 
 jest.mock("../validators/labels", () => ({
-  hasCodeReviewPendingLabel: jest.fn(),
+  hasCodeReviewPendingAndDoneLabels: jest.fn(),
 }));
 
 jest.mock("../events", () => ({
@@ -72,13 +72,13 @@ describe("WebhookController", () => {
       // Assert
       expect(responseObject.status).toHaveBeenCalledWith(200);
       expect(responseObject.send).toHaveBeenCalledWith("Evento recebido.");
-      expect(hasCodeReviewPendingLabel).not.toHaveBeenCalled();
+      expect(hasCodeReviewPendingAndDoneLabels).not.toHaveBeenCalled();
       expect(sendCodeReviewPendingEvent).not.toHaveBeenCalled();
     });
 
     it("should return 500 when event is an issue update but without code review label", async () => {
       // Arrange
-      (hasCodeReviewPendingLabel as jest.Mock).mockReturnValue(false);
+      (hasCodeReviewPendingAndDoneLabels as jest.Mock).mockReturnValue(false);
 
       // Act
       await handleGitLabWebhook(
@@ -87,7 +87,7 @@ describe("WebhookController", () => {
       );
 
       // Assert
-      expect(hasCodeReviewPendingLabel).toHaveBeenCalledWith(
+      expect(hasCodeReviewPendingAndDoneLabels).toHaveBeenCalledWith(
         mockRequest.body.labels
       );
       expect(sendCodeReviewPendingEvent).not.toHaveBeenCalled();
@@ -99,7 +99,7 @@ describe("WebhookController", () => {
 
     it("should send notification when issue has code review label", async () => {
       // Arrange
-      (hasCodeReviewPendingLabel as jest.Mock).mockReturnValue(true);
+      (hasCodeReviewPendingAndDoneLabels as jest.Mock).mockReturnValue(true);
       const mockNotification = {
         type: "message",
         content: "test",
@@ -118,7 +118,7 @@ describe("WebhookController", () => {
       );
 
       // Assert
-      expect(hasCodeReviewPendingLabel).toHaveBeenCalledWith(
+      expect(hasCodeReviewPendingAndDoneLabels).toHaveBeenCalledWith(
         mockRequest.body.labels
       );
 
@@ -134,7 +134,7 @@ describe("WebhookController", () => {
 
     it("should return 500 when Teams notification fails", async () => {
       // Arrange
-      (hasCodeReviewPendingLabel as jest.Mock).mockReturnValue(true);
+      (hasCodeReviewPendingAndDoneLabels as jest.Mock).mockReturnValue(true);
       (createCodeReviewPendingTemplate as jest.Mock).mockReturnValue({});
       (sendCodeReviewPendingEvent as jest.Mock).mockResolvedValue(false);
 
@@ -169,7 +169,7 @@ describe("WebhookController", () => {
       // Should not crash and return a reasonable response
       expect(responseObject.status).toHaveBeenCalled();
       expect(responseObject.send).toHaveBeenCalled();
-      expect(hasCodeReviewPendingLabel).not.toHaveBeenCalled();
+      expect(hasCodeReviewPendingAndDoneLabels).not.toHaveBeenCalled();
     });
   });
 });
