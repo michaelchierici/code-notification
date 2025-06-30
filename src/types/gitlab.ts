@@ -22,6 +22,7 @@ export interface ILabel {
   description: string | null;
   type: string;
   group_id: number;
+  user: any
 }
 
 export interface IGitlabAssignee {
@@ -37,12 +38,14 @@ export type LabelHandler = {
   handle: (issue: any, assignees: IGitlabAssignee[], user?: IGitlabAssignee) => Promise<boolean>;
 };
 
+export const NO_REVIEW_USERS = [112, 113] as const;
+
 export enum EventTypes {
   ISSUE = 'issue',
   UPDATE = 'update',
   TEST_ENVIRONMENT_PREFIX = 'Ambiente de testes::',
   READY_TO_TEST = 'Ready to test',
-  QA_USER = 'qa.interno'
+  QA_USER = 'qa.interno',
 }
 
 export enum LabelTypes {
