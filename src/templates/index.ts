@@ -72,7 +72,7 @@ export const createCodeReviewHotfixTemplate = (
     {
       type: "TextBlock",
       color: "Default",
-      text: "@todos",
+      text: "@everyone",
     },
     {
       type: "TextBlock",
@@ -218,7 +218,7 @@ export const createHotfixTemplate = (issue: any): ITeamsWebhookPayload => {
     {
       type: "TextBlock",
       color: "Default",
-      text: "@todos",
+      text: "@everyone",
     },
     {
       type: "TextBlock",
