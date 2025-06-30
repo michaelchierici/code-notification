@@ -41,7 +41,7 @@ const canProcessReviewEvent = (event: any): boolean => {
       (label: ILabel) =>
         label.title.startsWith(EventTypes.TEST_ENVIRONMENT_PREFIX) ||
         label.title === EventTypes.READY_TO_TEST ||
-        NO_REVIEW_USERS.includes(label.user.id)
+        NO_REVIEW_USERS.includes(event.user.id)
     )
   ) {
     return false;
