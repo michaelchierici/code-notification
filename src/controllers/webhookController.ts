@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { logger } from "../utils/logger";
 import { labelReviewEventsHandlers } from "../validators/labels";
-import { EventTypes, ILabel, NO_REVIEW_USERS } from "../types/gitlab";
+import {
+  EventTypes,
+  ILabel,
+  LabelTypes,
+  NO_REVIEW_USERS,
+} from "../types/gitlab";
 
 export const handleGitLabWebhook = async (req: Request, res: Response) => {
   const event = req.body;
@@ -41,7 +46,9 @@ const canProcessReviewEvent = (event: any): boolean => {
       (label: ILabel) =>
         label.title.startsWith(EventTypes.TEST_ENVIRONMENT_PREFIX) ||
         label.title === EventTypes.READY_TO_TEST ||
-        NO_REVIEW_USERS.includes(event.user.id)
+        (NO_REVIEW_USERS.includes(event.user.id) &&
+          (label.title === LabelTypes.CODE_REVIEW_VALIDATED ||
+            label.title === LabelTypes.CODE_REVIEW_FAILED))
     )
   ) {
     return false;
@@ -50,7 +57,8 @@ const canProcessReviewEvent = (event: any): boolean => {
     event.object_kind === EventTypes.ISSUE &&
     event.object_attributes &&
     event.object_attributes?.action === EventTypes.UPDATE &&
-    event.user.username !== EventTypes.QA_USER
+    event.user.username !== EventTypes.QA_USER &&
+    event.user.username !== EventTypes.agilist_user
   );
 };
 
