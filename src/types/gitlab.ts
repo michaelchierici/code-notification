@@ -42,7 +42,7 @@ export type LabelHandler = {
   ) => Promise<boolean>;
 };
 
-export const NO_REVIEW_USERS = [112, 113] as const;
+export const NO_REVIEW_USERS = [112, 113, 143, 146, 141] as const;
 
 export enum EventTypes {
   ISSUE = "issue",
