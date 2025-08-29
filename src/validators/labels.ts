@@ -4,16 +4,15 @@ import {
   sendCodeReviewHotfixEvent,
   sendCodeReviewPendingEvent,
   sendCodeReviewValidatedEvent,
-  sendHoftixEvent
+  sendHoftixEvent,
 } from "../events";
 import { ILabel, LabelHandler, LabelTypes } from "../types/gitlab";
-
 
 export const hasCodeReviewPendingAndDoneLabels = (
   labels: ILabel[]
 ): boolean => {
   const hasPending = labels.some(
-    (label) => label.title === LabelTypes.CODE_REVIEW_PENDING
+    (label) => label.title.toLowerCase() === LabelTypes.CODE_REVIEW_PENDING
   );
   const hasDone = labels.some((label) => label.title === LabelTypes.DONE);
   return hasPending && hasDone;
@@ -23,24 +22,27 @@ export const hasCodeReviewValidatedAndDoneLabels = (
   labels: ILabel[]
 ): boolean => {
   const hasValidated = labels.some(
-    (label) => label.title === LabelTypes.CODE_REVIEW_VALIDATED
+    (label) => label.title.toLowerCase() === LabelTypes.CODE_REVIEW_VALIDATED
   );
   const hasDone = labels.some((label) => label.title === LabelTypes.DONE);
   return hasValidated && hasDone;
 };
 
-
 export const hasCodeReviewFailLabel = (labels: ILabel[]): boolean => {
-  return labels.some((label) => label.title === LabelTypes.CODE_REVIEW_FAILED);
+  return labels.some(
+    (label) => label.title.toLowerCase() === LabelTypes.CODE_REVIEW_FAILED
+  );
 };
 
 export const hasCodeReviewFixedLabel = (labels: ILabel[]): boolean => {
-  return labels.some((label) => label.title === LabelTypes.CODE_REVIEW_FIXED);
+  return labels.some(
+    (label) => label.title.toLowerCase() === LabelTypes.CODE_REVIEW_FIXED
+  );
 };
 
 export const hasCodeReviewPendingHotfixLabels = (labels: ILabel[]): boolean => {
   const hasPending = labels.some(
-    (label) => label.title === LabelTypes.CODE_REVIEW_PENDING
+    (label) => label.title.toLowerCase() === LabelTypes.CODE_REVIEW_PENDING
   );
   const hasHotfix = labels.some((label) => label.title === LabelTypes.HOTFIX);
   return hasPending && hasHotfix;
@@ -63,11 +65,13 @@ export const labelReviewEventsHandlers: LabelHandler[] = [
   },
   {
     check: hasCodeReviewValidatedAndDoneLabels,
-    handle: (issue, assignees, revisor) => sendCodeReviewValidatedEvent(issue, assignees, revisor!),
+    handle: (issue, assignees, revisor) =>
+      sendCodeReviewValidatedEvent(issue, assignees, revisor!),
   },
   {
     check: hasCodeReviewFailLabel,
-    handle: (issue, assignees, revisor) => sendCodeReviewFailEvent(issue, assignees, revisor!),
+    handle: (issue, assignees, revisor) =>
+      sendCodeReviewFailEvent(issue, assignees, revisor!),
   },
   {
     check: hasCodeReviewFixedLabel,
